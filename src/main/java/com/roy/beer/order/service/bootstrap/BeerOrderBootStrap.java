@@ -3,6 +3,7 @@ package com.roy.beer.order.service.bootstrap;
 import com.roy.beer.order.service.repositories.CustomerRepository;
 import com.roy.beer.order.service.domain.Customer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class BeerOrderBootStrap implements CommandLineRunner {
 
     public static final String TASTING_ROOM = "Tasting Room";
@@ -28,8 +30,9 @@ public class BeerOrderBootStrap implements CommandLineRunner {
     @Transactional
     void loadCustomerData() {
         if(customerRepository.count() == 0) {
-            customerRepository.save(Customer.builder()
+            Customer savedCustomer = customerRepository.save(Customer.builder()
                     .customerName(TASTING_ROOM).apiKey(UUID.randomUUID()).build());
+            log.debug("Tasting Room Customer Id: " + savedCustomer.getId().toString());
         }
     }
 }
