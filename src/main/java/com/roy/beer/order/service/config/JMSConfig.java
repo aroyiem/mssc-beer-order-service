@@ -10,6 +10,8 @@ import org.springframework.jms.support.converter.MessageType;
 @Configuration
 public class JMSConfig {
 
+    public static final String VALIDATE_ORDER_QUEUE = "validate-order";
+
     @Bean // serialize message content to json using TestMessage
     public MessageConverter jacksonJmsMessageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
