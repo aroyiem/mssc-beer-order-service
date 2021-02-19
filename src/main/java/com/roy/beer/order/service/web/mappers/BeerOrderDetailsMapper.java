@@ -1,7 +1,7 @@
 package com.roy.beer.order.service.web.mappers;
 
 import com.roy.beer.order.service.domain.BeerOrderDetails;
-import com.roy.beer.order.service.web.model.BeerOrderDetailsDto;
+import com.roy.brewery.model.BeerOrderDetailsDto;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 

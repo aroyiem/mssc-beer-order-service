@@ -1,6 +1,6 @@
 package com.roy.beer.order.service.services.beer;
 
-import com.roy.beer.order.service.web.model.BeerDto;
+import com.roy.brewery.model.BeerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;

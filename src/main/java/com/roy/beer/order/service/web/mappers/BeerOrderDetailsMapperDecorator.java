@@ -2,8 +2,8 @@ package com.roy.beer.order.service.web.mappers;
 
 import com.roy.beer.order.service.domain.BeerOrderDetails;
 import com.roy.beer.order.service.services.beer.BeerService;
-import com.roy.beer.order.service.web.model.BeerDto;
-import com.roy.beer.order.service.web.model.BeerOrderDetailsDto;
+import com.roy.brewery.model.BeerDto;
+import com.roy.brewery.model.BeerOrderDetailsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

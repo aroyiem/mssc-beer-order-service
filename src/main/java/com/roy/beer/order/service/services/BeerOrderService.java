@@ -1,7 +1,7 @@
 package com.roy.beer.order.service.services;
 
-import com.roy.beer.order.service.web.model.BeerOrderDto;
-import com.roy.beer.order.service.web.model.BeerOrderPageList;
+import com.roy.brewery.model.BeerOrderDto;
+import com.roy.brewery.model.BeerOrderPageList;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;

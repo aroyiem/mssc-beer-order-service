@@ -1,33 +1,38 @@
-package com.roy.beer.order.service.web.model;
+package com.roy.brewery.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BeerDto {
+public class BeerOrderDto {
+
+    @JsonProperty("id")
     private UUID id = null;
+
+    @JsonProperty("version")
     private Integer version = null;
 
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ssZ", shape=JsonFormat.Shape.STRING)
+    @JsonProperty("createdDate")
     private OffsetDateTime createdDate = null;
 
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ssZ", shape=JsonFormat.Shape.STRING)
+    @JsonProperty("lastModifiedDate")
     private OffsetDateTime lastModifiedDate = null;
-    private String beerName;
-    private String beerStyle;
-    private String upc;
-    private Integer quantityOnHand;
 
-    @JsonFormat(shape= JsonFormat.Shape.STRING)
-    private BigDecimal price;
+    private UUID customerId;
+    private String customerRef;
+    private String orderStatus;
+    private String orderStatusCallbackUrl;
+    private List<BeerOrderDetailsDto> beerOrderDetails;
+
+
 }

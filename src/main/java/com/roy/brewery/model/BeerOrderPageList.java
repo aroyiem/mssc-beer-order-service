@@ -1,4 +1,4 @@
-package com.roy.beer.order.service.web.model;
+package com.roy.brewery.model;
 
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
