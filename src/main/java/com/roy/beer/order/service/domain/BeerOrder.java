@@ -19,7 +19,7 @@ import java.util.UUID;
 public class BeerOrder extends BaseEntity {
 
     private String customerRef;
-    private OrderStatusEnum orderStatus = OrderStatusEnum.NEW;
+    private BeerOrderStatusEnum orderStatus = BeerOrderStatusEnum.NEW;
     private String orderStatusCallbackUrl;
 
     @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.ALL)
@@ -33,7 +33,7 @@ public class BeerOrder extends BaseEntity {
     public BeerOrder(UUID id, Long version,
                      Timestamp createdDate,
                      Timestamp lastModifiedDate,
-                     String customerRef, OrderStatusEnum orderStatus,
+                     String customerRef, BeerOrderStatusEnum orderStatus,
                      String orderStatusCallbackUrl,
                      Set<BeerOrderDetails> beerOrderDetails,
                      Customer customer) {

@@ -1,6 +1,6 @@
 package com.roy.beer.order.service.web.model;
 
-import com.roy.beer.order.service.domain.OrderStatusEnum;
+import com.roy.beer.order.service.domain.BeerOrderStatusEnum;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,7 +17,7 @@ public class BeerOrderDto extends BaseItem {
 
     private UUID customerId;
     private String customerRef;
-    private OrderStatusEnum orderStatus;
+    private BeerOrderStatusEnum orderStatus;
     private String orderStatusCallbackUrl;
     private List<BeerOrderDetailsDto> beerOrderDetails;
 
@@ -28,7 +28,7 @@ public class BeerOrderDto extends BaseItem {
                         OffsetDateTime lastModifiedDate,
                         UUID customerId,
                         String customerRef,
-                        OrderStatusEnum orderStatus,
+                        BeerOrderStatusEnum orderStatus,
                         String orderStatusCallbackUrl,
                         List<BeerOrderDetailsDto> beerOrderDetails) {
         super(id, version, createdDate, lastModifiedDate);

@@ -2,7 +2,7 @@ package com.roy.beer.order.service.services;
 
 import com.roy.beer.order.service.domain.BeerOrder;
 import com.roy.beer.order.service.domain.Customer;
-import com.roy.beer.order.service.domain.OrderStatusEnum;
+import com.roy.beer.order.service.domain.BeerOrderStatusEnum;
 import com.roy.beer.order.service.repositories.BeerOrderRepository;
 import com.roy.beer.order.service.repositories.CustomerRepository;
 import com.roy.beer.order.service.web.mappers.BeerOrderMapper;
@@ -52,7 +52,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         BeerOrder beerOrder = beerOrderMapper.beerOrderDtoToBeerOrder(beerOrderDto);
         beerOrder.setId(null); // should not be set by outside client
         beerOrder.setCustomer(customer);
-        beerOrder.setOrderStatus(OrderStatusEnum.NEW);
+        beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
 
         beerOrder.getBeerOrderDetails().forEach(beerOrderDetails -> beerOrderDetails.setBeerOrder(beerOrder));
 
@@ -73,7 +73,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     @Transactional
     public void pickUpOrder(UUID customerId, UUID orderId) {
         BeerOrder beerOrder = getOrder(customerId, orderId);
-        beerOrder.setOrderStatus(OrderStatusEnum.PICKED_UP);
+        beerOrder.setOrderStatus(BeerOrderStatusEnum.PICKED_UP);
 
         beerOrderRepository.save(beerOrder);
     }
