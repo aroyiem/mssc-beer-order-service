@@ -2,6 +2,7 @@ package com.roy.beer.order.service.sm;
 
 import com.roy.beer.order.service.domain.BeerOrderEventEnum;
 import com.roy.beer.order.service.domain.BeerOrderStatusEnum;
+import com.roy.beer.order.service.services.BeerOrderManagerImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.action.Action;
@@ -9,6 +10,7 @@ import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
+import org.springframework.statemachine.guard.Guard;
 
 import java.util.EnumSet;
 
@@ -18,6 +20,7 @@ import java.util.EnumSet;
 public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
     private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> validateOrderAction;
+    private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> allocateOrderAction;
 
     @Override
     public void configure(StateMachineStateConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> states) throws Exception {
@@ -33,12 +36,52 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
 
     @Override
     public void configure(StateMachineTransitionConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> transitions) throws Exception {
-        transitions.withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATION_PENDING).event(BeerOrderEventEnum.VALIDATE_ORDER).action(validateOrderAction)
-                // todo add validation action here
+        transitions.withExternal().source(BeerOrderStatusEnum.NEW)
+                .target(BeerOrderStatusEnum.VALIDATION_PENDING)
+                .event(BeerOrderEventEnum.VALIDATE_ORDER)
+                .action(validateOrderAction)
+                .guard(orderIdGuard())
                 .and()
+
                 .withExternal()
-                .source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATED).event(BeerOrderEventEnum.VALIDATION_PASSED)
+                .source(BeerOrderStatusEnum.NEW)
+                .target(BeerOrderStatusEnum.VALIDATED)
+                .event(BeerOrderEventEnum.VALIDATION_PASSED)
                 .and()
-                .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATION_EXCEPTION).event(BeerOrderEventEnum.VALIDATION_FAILED);
+
+                .withExternal()
+                .source(BeerOrderStatusEnum.NEW)
+                .target(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
+                .event(BeerOrderEventEnum.VALIDATION_FAILED)
+                .and()
+
+                .withExternal()
+                .source(BeerOrderStatusEnum.VALIDATED)
+                .target(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .event(BeerOrderEventEnum.ALLOCATE_ORDER)
+                .action(allocateOrderAction)
+                .guard(orderIdGuard())
+                .and()
+
+                .withExternal()
+                .source(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .target(BeerOrderStatusEnum.ALLOCATED)
+                .event(BeerOrderEventEnum.ALLOCATION_SUCCESS)
+                .and()
+
+                .withExternal()
+                .source(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .target(BeerOrderStatusEnum.ALLOCATION_EXCEPTION)
+                .event(BeerOrderEventEnum.ALLOCATION_FAILED)
+                .and()
+
+                .withExternal()
+                .source(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .target(BeerOrderStatusEnum.PENDING_INVENTORY)
+                .event(BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
+    }
+
+    public Guard<BeerOrderStatusEnum, BeerOrderEventEnum> orderIdGuard() {
+        return stateContext -> stateContext.getMessageHeader(BeerOrderManagerImpl.ORDER_ID_HEADER) != null;
     }
 }

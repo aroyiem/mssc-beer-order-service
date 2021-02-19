@@ -34,6 +34,6 @@ public class BeerOrderDetailsDto {
     private Integer orderQuantity = 0;
     private String beerStyle;
     private BigDecimal price;
-
+    private Integer quantityAllocated;
 
 }
