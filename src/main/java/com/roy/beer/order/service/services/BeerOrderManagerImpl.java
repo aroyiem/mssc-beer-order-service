@@ -69,7 +69,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_SUCCESS);
 
-            updateAllocatedQuantity(beerOrderDto, beerOrder);
+            updateAllocatedQuantity(beerOrderDto);
         }, ()-> log.error("Order Not found. Id: " + beerOrderDto.getId()));
 
 
@@ -82,7 +82,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
 
-            updateAllocatedQuantity(beerOrderDto, beerOrder);
+            updateAllocatedQuantity(beerOrderDto);
         }, ()-> log.error("Order Not found. Id: " + beerOrderDto.getId()));
 
 
@@ -98,18 +98,21 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     }
 
-    private void updateAllocatedQuantity(BeerOrderDto beerOrderDto, BeerOrder beerOrder) {
-        BeerOrder allocateOrder = beerOrderRepository.getOne(beerOrderDto.getId());
+    private void updateAllocatedQuantity(BeerOrderDto beerOrderDto) {
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
 
-        allocateOrder.getBeerOrderDetails().forEach(beerOrderDetails -> {
-            beerOrderDto.getBeerOrderDetails().forEach(beerOrderDetailsDto -> {
-                if(beerOrderDetailsDto.getId().equals(beerOrderDetails.getId())) {
-                    beerOrderDetails.setQuantityAllocated(beerOrderDetailsDto.getQuantityAllocated());
-                }
+        beerOrderOptional.ifPresentOrElse(allocateOrder -> {
+            allocateOrder.getBeerOrderDetails().forEach(beerOrderDetails -> {
+                beerOrderDto.getBeerOrderDetails().forEach(beerOrderDetailsDto -> {
+                    if(beerOrderDetailsDto.getId().equals(beerOrderDetails.getId())) {
+                        beerOrderDetails.setQuantityAllocated(beerOrderDetailsDto.getQuantityAllocated());
+                    }
+                });
             });
-        });
 
-        beerOrderRepository.saveAndFlush(allocateOrder);
+            beerOrderRepository.saveAndFlush(allocateOrder);
+        }, () -> log.debug("Order Not Found, Id: " + beerOrderDto.getId()));
+
     }
 
     private void sendBeerOrderEvent(BeerOrder beerOrder, BeerOrderEventEnum eventEnum) {

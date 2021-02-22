@@ -7,6 +7,7 @@ import com.roy.beer.order.service.domain.BeerOrderStatusEnum;
 import com.roy.beer.order.service.repositories.BeerOrderRepository;
 import com.roy.beer.order.service.services.BeerOrderManagerImpl;
 import com.roy.beer.order.service.web.mappers.BeerOrderMapper;
+import com.roy.brewery.model.events.AllocateOrderRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.core.JmsTemplate;
@@ -34,7 +35,11 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(beerOrderId));
 
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
-            jmsTemplate.convertAndSend(JMSConfig.ALLOCATE_ORDER_QUEUE, beerOrderMapper.beerOrderToBeerOrderDto(beerOrder));
+            jmsTemplate.convertAndSend(JMSConfig.ALLOCATE_ORDER_QUEUE,
+                    AllocateOrderRequest.builder()
+                    .beerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder))
+                    .build()
+                    );
 
             log.debug("Sent Allocation Request for order id: " + beerOrderId);
         }, () -> log.error("Beer Order not found"));
