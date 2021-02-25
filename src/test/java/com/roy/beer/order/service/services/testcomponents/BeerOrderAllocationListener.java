@@ -22,31 +22,36 @@ public class BeerOrderAllocationListener {
 
         boolean pendingInventory = false;
         boolean allocationError = false;
+        boolean sendResponse = true;
 
         AllocateOrderRequest allocateOrderRequest = (AllocateOrderRequest) message.getPayload();
 
-        if("partial-allocation".equals(allocateOrderRequest.getBeerOrderDto().getCustomerRef())) {
+        if ("partial-allocation".equals(allocateOrderRequest.getBeerOrderDto().getCustomerRef())) {
             pendingInventory = true;
         }
 
-        if("fail-allocation".equals(allocateOrderRequest.getBeerOrderDto().getCustomerRef())) {
+        if ("fail-allocation".equals(allocateOrderRequest.getBeerOrderDto().getCustomerRef())) {
             allocationError = true;
+        } else if ("dont-allocate".equals(allocateOrderRequest.getBeerOrderDto().getCustomerRef())) {
+            sendResponse = false;
         }
 
         boolean finalPendingInventory = pendingInventory;
 
         allocateOrderRequest.getBeerOrderDto().getBeerOrderDetails().forEach(beerOrderDetailsDto -> {
-            if(finalPendingInventory) {
+            if (finalPendingInventory) {
                 beerOrderDetailsDto.setQuantityAllocated(beerOrderDetailsDto.getOrderQuantity() - 1);
             } else {
                 beerOrderDetailsDto.setQuantityAllocated(beerOrderDetailsDto.getOrderQuantity());
             }
         });
 
-        jmsTemplate.convertAndSend(JMSConfig.ALLOCATE_ORDER_RESPONSE_QUEUE,
-                AllocateOrderResult.builder()
-        .beerOrderDto(allocateOrderRequest.getBeerOrderDto())
-        .allocationError(allocationError)
-        .pendingInventory(pendingInventory).build());
+        if (sendResponse) {
+            jmsTemplate.convertAndSend(JMSConfig.ALLOCATE_ORDER_RESPONSE_QUEUE,
+                    AllocateOrderResult.builder()
+                            .beerOrderDto(allocateOrderRequest.getBeerOrderDto())
+                            .allocationError(allocationError)
+                            .pendingInventory(pendingInventory).build());
+        }
     }
 }
